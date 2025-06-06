@@ -2,6 +2,9 @@
     "name": "@enormora/identity-esm",
     "version": "1.0.0",
     "description": "An identity function exported as ECMAScript module",
+    "publishConfig": {
+        "access": "public"
+    },
     "license": "MIT",
     "repository": {
         "type": "git",
