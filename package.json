@@ -1,0 +1,40 @@
+{
+    "name": "@enormora/identity-esm",
+    "version": "1.0.0",
+    "description": "An identity function exported as ECMAScript module",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/enormora/identity-esm.git"
+    },
+    "author": {
+        "name": "Christian Rackerseder",
+        "email": "github@echooff.de",
+        "url": "https://www.echooff.dev"
+    },
+    "type": "module",
+    "exports": {
+        "types": "./distribution/index.d.ts",
+        "default": "./distribution/index.js"
+    },
+    "main": "./distribution/index.js",
+    "types": "./distribution/index.d.ts",
+    "engines": {
+        "node": ">=22"
+    },
+    "files": [
+        "distribution",
+        "!distribution/**/*.test.*"
+    ],
+    "keywords": [
+        "identity",
+        "esm"
+    ],
+    "devDependencies": {
+        "@arethetypeswrong/cli": "0.18.1",
+        "@types/node": "22.15.30",
+        "prettier": "3.5.3",
+        "rust-just": "1.40.0",
+        "typescript": "5.8.3"
+    }
+}
