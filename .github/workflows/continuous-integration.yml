@@ -1,0 +1,28 @@
+---
+name: Continuous integration
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+
+jobs:
+    continuous-integration:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [22.x, 24.x]
+        steps:
+            - name: Checkout Git repository
+              uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install dependencies
+              run: npm clean-install
+            - name: Test
+              run: npx just test
+            - name: Build
+              run: npx just build
