@@ -4,8 +4,6 @@ name: Continuous integration
 on:
     pull_request:
     push:
-        branches:
-            - main
 
 jobs:
     continuous-integration:
