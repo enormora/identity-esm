@@ -34,7 +34,7 @@
         "esm"
     ],
     "devDependencies": {
-        "@arethetypeswrong/cli": "0.18.1",
+        "@arethetypeswrong/cli": "0.18.2",
         "@types/node": "22.15.30",
         "prettier": "3.5.3",
         "rust-just": "1.40.0",
