@@ -35,7 +35,7 @@
     ],
     "devDependencies": {
         "@arethetypeswrong/cli": "0.18.1",
-        "@types/node": "22.15.30",
+        "@types/node": "22.15.31",
         "prettier": "3.5.3",
         "rust-just": "1.40.0",
         "typescript": "5.8.3"
