@@ -5,12 +5,24 @@ import { typescriptConfig } from '@enormora/eslint-config-typescript';
 
 export default [
     {
-        ignores: [ 'distribution/**' ]
+        ignores: [ 'target/**' ]
     },
     ...baseConfig,
     {
+        files: [ '**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}' ],
+        rules: {
+            'import/no-unused-modules': [
+                'error',
+                {
+                    unusedExports: true,
+                    suppressMissingFileEnumeratorAPIWarning: true
+                }
+            ]
+        }
+    },
+    {
         ...nodeConfig,
-        files: [ '**/*.{js,ts}' ]
+        files: [ '**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}' ]
     },
     {
         ...typescriptConfig,
@@ -28,16 +40,16 @@ export default [
     },
     {
         ...mochaNodeAssertConfig,
-        files: [ '**/*.test.ts' ],
-        languageOptions: {
-            globals: {
-                suite: 'readonly',
-                test: 'readonly'
-            }
+        files: [ '**/*.test.ts' ]
+    },
+    {
+        files: [ '**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}' ],
+        rules: {
+            'max-lines-per-function': [ 'error', { max: 50, skipBlankLines: true, skipComments: true } ]
         }
     },
     {
         ...nodeConfigFileConfig,
-        files: [ 'eslint.config.js', 'mocha.config.json', 'prettier.config.js' ]
+        files: [ 'eslint.config.js', 'mocha.config.json', 'packtory.config.js', 'prettier.config.js' ]
     }
 ];

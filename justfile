@@ -1,27 +1,49 @@
 export PATH := './node_modules/.bin:' + env_var('PATH')
 
 default:
-	@just --list
+    @just --list
 
-@eslint *OPTIONS:
-	eslint . --max-warnings 0 {{OPTIONS}}
+compile:
+    tsc --build
 
-@eslint-fix:
-	just eslint --fix
+eslint *OPTIONS:
+    eslint . --max-warnings 0 {{OPTIONS}}
 
-@lint: eslint
+eslint-fix: (eslint '--fix')
 
-@lint-fix: eslint-fix
+prettier *OPTIONS:
+    prettier './**/*.{yml,yaml,json,md}' {{OPTIONS}}
 
-@compile:
-	tsc
+prettier-check: (prettier '--check')
 
-@check-exports:
-	attw --pack . --ignore-rules=cjs-resolves-to-esm
+prettier-fix: (prettier '--write')
 
-test: lint compile
-	just check-exports
-	mocha --config mocha.config.json
+lint: eslint prettier-check
 
-build:
-	just compile
+lint-fix: eslint-fix prettier-fix
+
+test-unit:
+    mocha --config mocha.config.json
+
+test-unit-coverage:
+    c8 --config .c8rc.json just test-unit
+
+test: lint test-unit-coverage packtory-dry-run
+
+packtory-dry-run: compile
+    packtory publish
+
+release-plan: compile
+    packtory release
+
+release-diff: compile
+    packtory release-diff
+
+changelog: compile
+    packtory changelog
+
+prepare-release: compile
+    packtory release --write-changelog --commit --no-dry-run
+
+publish-release: compile
+    packtory release --publish --tag --push --github-release --no-dry-run
