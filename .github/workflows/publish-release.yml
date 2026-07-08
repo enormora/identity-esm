@@ -153,6 +153,10 @@ jobs:
                     exit 1
                   fi
                   echo "Verified ${spec} has a registered provenance attestation."
+            - name: Configure Git tagger
+              run: |
+                  git config user.name 'github-actions[bot]'
+                  git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             - name: Configure tag-only release push refs
               run: git config remote.origin.push 'refs/tags/*:refs/tags/*'
             - name: Publish release
