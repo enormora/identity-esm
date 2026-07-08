@@ -12,6 +12,7 @@
         "outDir": "./distribution",
         "declaration": true,
         "lib": ["ES2023"],
+        "types": ["node", "mocha"],
         "allowImportingTsExtensions": true,
         "rewriteRelativeImportExtensions": true
     },

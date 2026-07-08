@@ -1,15 +1,27 @@
+export PATH := './node_modules/.bin:' + env_var('PATH')
+
 default:
 	@just --list
 
+@eslint *OPTIONS:
+	eslint . --max-warnings 0 {{OPTIONS}}
+
+@eslint-fix:
+	just eslint --fix
+
+@lint: eslint
+
+@lint-fix: eslint-fix
+
 @compile:
-	npx tsc
+	tsc
 
 @check-exports:
-	npx attw --pack . --ignore-rules=cjs-resolves-to-esm
+	attw --pack . --ignore-rules=cjs-resolves-to-esm
 
-test: compile
-	npx just check-exports
-	node --experimental-strip-types --test "source/**/*.test.ts"
+test: lint compile
+	just check-exports
+	mocha --config mocha.config.json
 
 build:
-	npx just compile
+	just compile

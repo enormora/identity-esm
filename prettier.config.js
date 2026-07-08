@@ -1,4 +1,4 @@
 export default {
     printWidth: 120,
-    tabWidth: 4,
+    tabWidth: 4
 };
