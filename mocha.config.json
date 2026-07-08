@@ -1,0 +1,12 @@
+{
+    "diff": true,
+    "forbid-pending": true,
+    "extension": ["ts"],
+    "exclude": [],
+    "jobs": 1,
+    "parallel": false,
+    "reporter": "dot",
+    "slow": 75,
+    "spec": ["./source/**/*.test.ts"],
+    "ui": "tdd"
+}
