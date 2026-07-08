@@ -41,7 +41,7 @@
         "@enormora/eslint-config-node": "0.0.36",
         "@enormora/eslint-config-typescript": "0.0.56",
         "@types/mocha": "10.0.10",
-        "@types/node": "25.9.5",
+        "@types/node": "26.1.1",
         "eslint": "10.6.0",
         "mocha": "11.7.6",
         "prettier": "3.9.4",
