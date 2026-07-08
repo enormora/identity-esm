@@ -5,7 +5,7 @@ import { typescriptConfig } from '@enormora/eslint-config-typescript';
 
 export default [
     {
-        ignores: [ 'target/**' ]
+        ignores: [ '**/CHANGELOG.md', 'target/**' ]
     },
     ...baseConfig,
     {
