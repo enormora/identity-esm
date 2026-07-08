@@ -1,4 +1,6 @@
 import assert from 'node:assert';
+import { suite, test } from 'mocha';
+
 import { identity } from './index.ts';
 
 suite('identity', function () {

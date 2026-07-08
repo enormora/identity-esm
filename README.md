@@ -13,5 +13,5 @@ npm install @enormora/identity-esm
 ```typescript
 import { identity } from '@enormora/identity-esm';
 
-const result = identity('foo'); // "foo"
+const result = identity('foo'); // 'foo'
 ```
