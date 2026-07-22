@@ -1,22 +1,4 @@
 {
-    "lockFileMaintenance": {
-        "enabled": true,
-        "automerge": true
-    },
-    "packageRules": [
-        {
-            "matchDepTypes": [
-                "dependencies",
-                "devDependencies"
-            ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch"
-            ],
-            "automerge": true,
-            "automergeType": "branch"
-        }
-    ],
-    "platformAutomerge": true,
-    "automergeStrategy": "merge-commit"
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["github>enormora/renovate-config#1.0.0", "github>enormora/renovate-config:github-automerge#1.0.0"]
 }
