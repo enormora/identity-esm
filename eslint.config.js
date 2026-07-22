@@ -50,6 +50,6 @@ export default [
     },
     {
         ...nodeConfigFileConfig,
-        files: [ 'eslint.config.js', 'mocha.config.json', 'packtory.config.js', 'prettier.config.js' ]
+        files: [ 'eslint.config.js', 'mocha.config.json', 'packtory.config.js' ]
     }
 ];
