@@ -21,7 +21,7 @@ test-unit:
 test-unit-coverage:
     c8 --config .c8rc.json just test-unit
 
-test: lint test-unit-coverage packtory-dry-run
+test: lint test-unit-coverage check-packages
 
 packtory-dry-run: compile
     packtory publish
@@ -36,7 +36,17 @@ changelog: compile
     packtory changelog
 
 prepare-release: compile
-    packtory release --write-changelog --commit --no-dry-run
+    packtory release-pr maintain --no-dry-run
 
 publish-release: compile
     packtory release --publish --tag --push --github-release --no-dry-run
+
+check-packages: compile
+    rm -rf target/package-checks
+    packtory pack --all --format folder --out target/package-checks
+
+validate-release-pr:
+    packtory release-pr validate
+
+authorize-release-publish *OPTIONS:
+    packtory release-pr authorize-publish {{OPTIONS}}

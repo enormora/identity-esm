@@ -7,7 +7,7 @@ const sourcesFolder = path.join(projectFolder, 'target/build/source');
 
 const packageRoots = {
     main: {
-        js: 'index.js',
+        javaScript: 'index.js',
         declarationFile: 'index.d.ts'
     }
 };
@@ -18,14 +18,14 @@ const packageInterface = {
 
 /**
  * @param {NodeJS.ProcessEnv} environmentVariables
- * @returns {import("@packtory/cli").PacktoryConfig["registrySettings"]}
+ * @returns {import("@packtory/cli").PacktoryConfiguration["registrySettings"]}
  */
 export function resolveRegistrySettingsForEnvironment(environmentVariables) {
     const npmToken = environmentVariables.NPM_TOKEN;
 
     if (npmToken !== undefined && npmToken !== '') {
         return {
-            auth: {
+            authentication: {
                 type: 'bearer-token',
                 token: npmToken
             }
@@ -34,8 +34,8 @@ export function resolveRegistrySettingsForEnvironment(environmentVariables) {
 
     if (environmentVariables.GITHUB_ACTIONS === 'true') {
         return {
-            auth: {
-                type: 'npm-oidc',
+            authentication: {
+                type: 'npm-open-identity-connect',
                 provider: 'github-actions'
             }
         };
@@ -45,20 +45,84 @@ export function resolveRegistrySettingsForEnvironment(environmentVariables) {
 }
 
 /**
- * @param {NodeJS.ProcessEnv} environmentVariables
- * @returns {NonNullable<NonNullable<import("@packtory/cli").PacktoryConfig["commonPackageSettings"]>["publishSettings"]>}
- */
-export function resolvePublishSettingsForEnvironment(environmentVariables) {
+@returns {NonNullable<import('@packtory/cli').PacktoryConfiguration['changelog']>}
+*/
+function createChangelogSettings() {
     return {
-        access: 'public',
-        ...environmentVariables.GITHUB_ACTIONS === 'true' ? { provenance: { type: 'auto' } } : {}
+        packageTagFormat: '{packageName}@{version}',
+        outputs: [ { kind: 'repository-file', path: 'CHANGELOG.md' }, { kind: 'github-release' } ],
+        pullRequestLog: {
+            ignoredLabels: [ 'release' ],
+            collapseRules: [
+                {
+                    label: 'upgrade',
+                    pattern: '^(?<prefix>⬆️ )?Update dependency (?<dependency>.+?) from (?<from>.+?) to (?<to>.+?)$',
+                    replace: '$<prefix>Update dependency $<dependency> from $<from> to $<to>'
+                },
+                {
+                    label: 'upgrade',
+                    pattern: '^(?<prefix>⬆️ )?Update (?:dependency )?`?(?<dependency>.+?)`? to `?(?<to>[^` ]+)`?$',
+                    replace: '$<prefix>Update dependency $<dependency> to $<to>',
+                    versionGroup: 'to'
+                },
+                {
+                    label: 'upgrade',
+                    pattern: '^(?<prefix>⬆️ )?(?<dependency>Lock file maintenance|Update (?:.+ dependencies|eslint))$',
+                    replace: '$<prefix>$<dependency>',
+                    collapse: 'same'
+                }
+            ]
+        }
     };
 }
 
 /**
- * @returns {Promise<import("@packtory/cli").PacktoryConfig>}
+@returns {NonNullable<import('@packtory/cli').PacktoryConfiguration['releasePullRequest']>}
+*/
+function createReleasePullRequestSettings() {
+    return {
+        branch: 'release/identity-esm',
+        body: 'Updates CHANGELOG.md for the next identity package release.',
+        githubActionsContinuousIntegration: {
+            trigger: 'workflow-dispatch',
+            workflowFile: 'continuous-integration.yml',
+            requiredStatusContexts: [
+                'Tests with Node.js v24',
+                'Tests with Node.js v26',
+                'Release PR policy',
+                'Workflow security analysis'
+            ]
+        }
+    };
+}
+
+const checks = {
+    noDevelopmentDependencyImports: { enabled: true },
+    noUnusedBundleDependencies: { enabled: true },
+    uniqueTargetPaths: { enabled: true },
+    noUnexposedExecutables: { enabled: true },
+    nodeEngineCompatibility: { enabled: true },
+    noDuplicatedFiles: { enabled: true },
+    requiredFiles: { enabled: true, files: [ 'LICENSE', 'README.md' ] },
+    typeScriptIntegrity: { enabled: true, declarations: 'all' },
+    noSideEffects: { enabled: true }
+};
+
+/**
+ * @param {NodeJS.ProcessEnv} environmentVariables
+ * @returns {NonNullable<NonNullable<import("@packtory/cli").PacktoryConfiguration["commonPackageSettings"]>["publishSettings"]>}
  */
-export async function buildConfig() {
+export function resolvePublishSettingsForEnvironment(environmentVariables) {
+    return {
+        access: 'public',
+        ...environmentVariables.GITHUB_ACTIONS === 'true' ? { provenance: { type: 'automatic' } } : {}
+    };
+}
+
+/**
+ * @returns {Promise<import("@packtory/cli").PacktoryConfiguration>}
+ */
+export async function buildConfiguration() {
     const packageJsonContent = await fs.readFile(path.join(projectFolder, 'package.json'), { encoding: 'utf8' });
     const packageJson = JSON.parse(packageJsonContent);
     // eslint-disable-next-line node/no-process-env -- Packtory config maps publish auth and provenance from process env.
@@ -68,16 +132,13 @@ export async function buildConfig() {
 
     return {
         ...registrySettings === undefined ? {} : { registrySettings },
-        changelog: {
-            packageTagFormat: '{packageName}@{version}',
-            outputs: [ { kind: 'repository-file', path: 'CHANGELOG.md' }, { kind: 'github-release' } ]
-        },
+        changelog: createChangelogSettings(),
         commonPackageSettings: {
             sourcesFolder,
-            mainPackageJson: packageJson,
+            mainPackageManifest: packageJson,
             includeSourceMapFiles: true,
             publishSettings,
-            additionalPackageJsonAttributes: {
+            additionalPackageManifestAttributes: {
                 author: packageJson.author,
                 license: packageJson.license,
                 repository: packageJson.repository,
@@ -85,11 +146,11 @@ export async function buildConfig() {
             },
             additionalFiles: [
                 {
-                    sourceFilePath: path.join(projectFolder, 'LICENSE'),
+                    inputFilePath: path.join(projectFolder, 'LICENSE'),
                     targetFilePath: 'LICENSE'
                 },
                 {
-                    sourceFilePath: path.join(projectFolder, 'README.md'),
+                    inputFilePath: path.join(projectFolder, 'README.md'),
                     targetFilePath: 'README.md'
                 }
             ]
@@ -100,6 +161,8 @@ export async function buildConfig() {
                 roots: packageRoots,
                 packageInterface
             }
-        ]
+        ],
+        checks,
+        releasePullRequest: createReleasePullRequestSettings()
     };
 }
